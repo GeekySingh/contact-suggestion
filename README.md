@@ -1,2 +1,2 @@
-# contact_suggestion
-Simple library to show contacts as user type their name
+# Contact Suggestions
+Library to allow user to easily search through contacts
