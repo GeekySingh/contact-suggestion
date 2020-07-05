@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ContactSearchView">
+        <attr name="csv_showInfoDialog" format="boolean" />
+        <attr name="csv_infoDialogMessage" format="boolean" />
+    </declare-styleable>
+</resources>

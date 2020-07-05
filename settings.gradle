@@ -1,0 +1,3 @@
+include ':contact_suggestion'
+include ':app'
+rootProject.name = "ContactSearchSuggestion"
