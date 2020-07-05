@@ -3,6 +3,7 @@ package com.gappscorp.contact_suggesstion.extensions
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.util.TypedValue
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.gappscorp.contact_suggesstion.R
@@ -56,4 +57,11 @@ fun Context.infoDialog(message: String, callback: (allwed: Boolean) -> Unit) {
             callback.invoke(false)
         }
         .show()
+}
+
+fun Context.toDp(px: Int): Int {
+    return TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        px.toFloat(), resources.displayMetrics
+    ).toInt()
 }

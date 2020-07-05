@@ -4,19 +4,24 @@ import android.content.Context
 import android.text.Editable
 import android.util.AttributeSet
 import android.util.Log
-import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 import androidx.core.widget.doAfterTextChanged
 import com.gappscorp.contact_suggesstion.R
+import com.gappscorp.contact_suggesstion.callback.ContactCallback
+import com.gappscorp.contact_suggesstion.data.model.Contact
 import com.gappscorp.contact_suggesstion.extensions.hasContactsPermission
 import com.gappscorp.contact_suggesstion.extensions.infoDialog
 import com.gappscorp.contact_suggesstion.extensions.requestContactPermission
 
 private const val TAG = "ContactSearchView"
 
-class ContactSearchView : AppCompatEditText {
+class ContactSearchView : AppCompatAutoCompleteTextView {
 
     private var _showInfoDialog = true
     private var _infoDialogMessage: String = ""
+
+    private var callback: ((contact: Contact) -> Unit)? = null
+    private var contactSuggestionPopup: ContactSuggestionPopup? = null
 
     constructor(context: Context) : super(context) {
         init(context, null)
@@ -87,8 +92,37 @@ class ContactSearchView : AppCompatEditText {
     }
 
     private fun beginSearchSuggestion() {
-        doAfterTextChanged { text: Editable? ->
-
+        doAfterTextChanged { name: Editable? ->
+            if (name.isNullOrEmpty()) {
+                contactSuggestionPopup?.dismiss()
+            } else {
+                if (contactSuggestionPopup == null)
+                    initContactSuggestionPopupWindow()
+                if (!contactSuggestionPopup?.isShowing!!) {
+                    contactSuggestionPopup?.showAsDropDown(this)
+                }
+                contactSuggestionPopup?.query(name.toString())
+                requestFocus()
+            }
         }
+    }
+
+    private fun initContactSuggestionPopupWindow() {
+        if (contactSuggestionPopup == null)
+            contactSuggestionPopup = ContactSuggestionPopup(context)
+        contactSuggestionPopup?.setContactCallback(object : ContactCallback {
+            override fun onContactSelected(contact: Contact) {
+                callback?.invoke(contact)
+            }
+        })
+    }
+
+    fun setContactSelectionListener(callback: (contact: Contact) -> Unit) {
+        this.callback = callback
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        contactSuggestionPopup?.dismiss()
     }
 }
