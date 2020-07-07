@@ -4,6 +4,8 @@ import android.content.Context
 import android.text.Editable
 import android.util.AttributeSet
 import android.util.Log
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputConnection
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 import androidx.core.widget.doAfterTextChanged
 import com.gappscorp.contact_suggesstion.R
@@ -12,6 +14,8 @@ import com.gappscorp.contact_suggesstion.data.model.Contact
 import com.gappscorp.contact_suggesstion.extensions.hasContactsPermission
 import com.gappscorp.contact_suggesstion.extensions.infoDialog
 import com.gappscorp.contact_suggesstion.extensions.requestContactPermission
+import com.google.android.material.textfield.TextInputLayout
+
 
 private const val TAG = "ContactSearchView"
 
@@ -119,6 +123,19 @@ class ContactSearchView : AppCompatAutoCompleteTextView {
 
     fun setContactSelectionListener(callback: (contact: Contact) -> Unit) {
         this.callback = callback
+    }
+
+    override fun onCreateInputConnection(outAttrs: EditorInfo): InputConnection? {
+        val ic = super.onCreateInputConnection(outAttrs)
+        if (ic != null && outAttrs.hintText == null) {
+            // If we don't have a hint and our parent is a TextInputLayout, use it's hint for the
+            // EditorInfo. This allows us to display a hint in 'extract mode'.
+            val parent = parent
+            if (parent is TextInputLayout) {
+                outAttrs.hintText = parent.hint
+            }
+        }
+        return ic
     }
 
     override fun onDetachedFromWindow() {
